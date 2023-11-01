@@ -1,0 +1,204 @@
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Contact Us Form</title>
+    <style>
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .contact {
+            padding: 80px 0;
+            text-align: center;
+margin-left : 700px;
+        }
+
+        .contact .wrapper1 {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .contact .title1 h1 {
+            margin: 0;
+            font-size: 42px;
+            color: #007bff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .contact .input-fields {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-gap: 15px;
+            margin-top: 30px;
+        }
+
+        .contact .input-fields input,
+        .contact .input-fields textarea {
+            width: auto;
+            padding: 15px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .contact .input-fields input:focus,
+        .contact .input-fields textarea:focus {
+            border-color: #007bff;
+        }
+
+        .contact .msg textarea {
+            height: 120px;
+            resize: none;
+        }
+
+        .contact .btn1 button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .contact .btn1 button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        .footer .box-container {
+            display: flex;
+            justify-content: space-around;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .footer .box {
+            flex: 1;
+            margin: 0 20px;
+            max-width: 200px;
+        }
+
+        .footer h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #007bff;
+        }
+
+        .footer a {
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            margin-bottom: 10px;
+            font-size: 18px;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer a:hover {
+            opacity: 0.8;
+        }
+
+
+.video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 110vh;
+            height: 100%; /* Set the height for the video background (50% of viewport height) */
+            z-index: -1; /* Place the video behind other content */
+            overflow: hidden; /* Hide video outside the viewport */
+        }
+
+        .video-bg video {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+<div class="video-bg">
+    <video autoplay loop muted playsinline poster="fallback-image.jpg">
+        <source src="C:\Users\PATEL SHREYA\Downloads\stock-footage--d-motion-graphics-group-of-office-workers-sitting-at-desks-and-communicating-or-talking-to-each.webm" type="video/mp4">
+        <!-- Add other video format sources if needed -->
+    </video>
+</div>
+<center>
+    <section class="contact" id="contact">
+        <div class="wrapper1">
+            <div class="title1">
+                <h1>Contact Us</h1>
+            </div>
+            <div class="contact-form" style="align: right">
+                <form method="post" action="thankyou.html">
+                    <div class="input-fields">
+                        <input type="text" class="input" placeholder="Your Name" name="name" required>
+                        <input type="email" class="input" placeholder="Your Email Address" name="email" pattern=".+@gmail\.com" required>
+                        <input type="phone" class="input" placeholder="Your Phone Number" name="phone" required>
+                        <input type="text" class="input" placeholder="Subject" name="subject" required>
+                    </div>
+                    <div class="msg">
+                        <textarea placeholder="Your Message" name="message" required></textarea>
+                        <div class="btn1">
+                            <button type="submit">Send Message</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+</center>
+    <section class="footer">
+        <div class="box-container">
+            <div class="box">
+                <h3>Quick links</h3>
+                <a href="home.html">Home</a>
+            </div>
+            <div class="box">
+                <h3>Extra links</h3>
+                <a href="#contact">Ask Questions</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">Privacy Policy</a>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

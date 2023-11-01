@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shortest Route Finder</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            height: 1000px;
+            width: 100%;
+        }
+    </style>
+    <script>
+        let map;
+        let shortestRouteLayer;
+
+        function initializeMap() 
+        {
+            map = L.map('map').setView([23.0225, 72.5714], 8); // Set the initial map center and zoom level
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map); // Use OpenStreetMap tiles
+            // Add markers for cities
+            for (const city in cities) {
+                L.marker([cities[city].lat, cities[city].lng]).bindPopup(city).addTo(map);
+            }
+
+            shortestRouteLayer = L.featureGroup().addTo(map);
+        }
+
+        // Rest of the code remains unchanged...
+
+        function drawRouteOnMap(route, cities) {
+            clearRouteFromMap();
+            const latLngs = route.map(city => [cities[city].lat, cities[city].lng]);
+            L.polyline(latLngs, { color: 'blue', weight: 9 }).addTo(shortestRouteLayer);
+        }
+
+            // Add markers for cities
+            const cities = {
+                'Ahmedabad': { lat: 23.0225, lng: 72.5714 },
+                'Vadodara': { lat: 22.3072, lng: 73.1812 },
+                'Surat': { lat: 21.1702, lng: 72.8311 },
+                'Rajkot': { lat: 22.3039, lng: 70.8022 },
+                'Gandhinagar': { lat: 23.2156, lng: 72.6369 },
+                'Chotila': { lat: 22.4181, lng: 71.1944 },
+                'Sayla': { lat: 22.5409, lng: 71.4715 },
+                'Limbdi': { lat: 22.5656, lng: 71.7993 },
+                'Bavla': { lat: 22.8335, lng: 72.3643 },
+                'Tarapur':{lat:22.4888, lng:72.6580},
+                'Vasad':{lat:22.4526, lng:73.0650},
+                'Bharuch':{lat:21.7051, lng: 72.9959}
+  // Add more cities with their latitude and longitude here
+};
+
+            for (const city in cities) {
+                L.marker([cities[city].lat, cities[city].lng]).bindPopup(city).addTo(map);
+            }
+
+            shortestRouteLayer = L.featureGroup().addTo(map);
+        
+
+        // Function to perform DFS
+        function dfs(graph, start, end, visited, path) {
+            if (start === end) {
+                return [...path, end];
+            }
+
+            visited[start] = true;
+            for (const neighbor of graph[start]) {
+                if (!visited[neighbor]) {
+                    const newPath = dfs(graph, neighbor, end, { ...visited }, [...path, start]);
+                    if (newPath.length > 0) {
+                        return newPath;
+                    }
+                }
+            }
+
+            return [];
+        }
+
+        // Function to find the shortest route
+        function findShortestRoute() {
+            const graph = {
+                'Rajkot': ['Chotila','Sayla','Limbdi','Bavla','Ahmedabad','Gandhinagar'],
+                'Ahmedabad': ['Rajkot','Chotila','Sayla','Limbdi','Bavla','Gandhinagar'],
+                'Chotila':['Sayla','Limbdi','Bavla','Ahmedabad','Gandhinagar'],
+                'Sayla':['Limbdi','Bavla','Ahmedabad','Gandhinagar'],
+                'Limbdi':['Bavla','Tarapur','Ahmedabad','Vadodara','Gandhinagar'],
+                'Tarapur':['Vasad','Vadodara'],
+                'Vasad':['Vadodara'],
+                'Bavla':['Ahmedabad','Gandhinagar'],
+                'Ahmedabad': ['Rajkot','Chotila','Sayla','Limbdi','Bavla','Gandhinagar'],
+                'Vadodara': ['Rajkot','Chotila','Sayla','Limbdi','Bharuch','Tarapur','Vasad','Ahmedabad', 'Surat','Rajkot'],
+                'Surat': ['Ahmedabad', 'Vadodara','Ananad'],
+                'Gandhinagar': ['Ahmedabad'],
+                'Bharuch':['Surat']
+                //'Ananad':[],
+                //'Kuch':[],
+                //'Banaskatha':[],
+                //'Junagadh':[],
+                //'Ankleshwar':[],
+                //'Bharuch':[],
+
+            };
+
+            const startCity = document.getElementById('startCity').value.trim();
+            const endCity = document.getElementById('endCity').value.trim();
+
+            if (!startCity || !endCity) {
+                alert('Please enter valid cities.');
+                return;
+            }
+
+            const shortestRoute = dfs(graph, startCity, endCity, {}, []);
+            if (shortestRoute.length > 0) {
+                document.getElementById('result').textContent = `Shortest route from ${startCity} to ${endCity}: ${shortestRoute.join(' -> ')}`;
+                drawRouteOnMap(shortestRoute);
+            } else {
+                document.getElementById('result').textContent = `No route found from ${startCity} to ${endCity}.`;
+                clearRouteFromMap();
+            }
+        }
+
+        function drawRouteOnMap(route) {
+            clearRouteFromMap();
+            const latLngs = route.map(city => [cities[city].lat, cities[city].lng]);
+            L.polyline(latLngs, { color: 'blue', weight: 9 }).addTo(shortestRouteLayer);
+        }
+
+        function clearRouteFromMap() {
+            shortestRouteLayer.clearLayers();
+        }
+    </script>
+</head>
+<body onload="initializeMap()">
+    <button type="submit"><a href="map.html">Globe & Calculator</a></button>
+    <h1>Shortest Route Finder</h1>
+    <label for="startCity">Start City:</label>
+    <input type="text" id="startCity" list="cities">
+    <datalist id="cities">
+        <option value="Ahmedabad">
+        <option value="Vadodara">
+        <option value="Surat">
+        <option value="Rajkot">
+        <option value="Gandhinagar">
+        <!-- Add more city options here -->
+    </datalist>
+    <label for="endCity">End City:</label>
+    <input type="text" id="endCity" list="cities">
+    <button onclick="findShortestRoute()">Find Shortest Route</button>
+    <p id="result"></p>
+    <div id="map"></div>
+</body>
+</html>

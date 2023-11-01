@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sustainable Transportation App</title>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        /* Styles as before */
+        .most-polluted {
+            background-color: #FF0000; /* Red marker for most polluted areas */
+        }
+
+        .moderately-polluted {
+            background-color: #FFA500; /* Orange marker for moderately polluted areas */
+        }
+
+        .least-polluted {
+            background-color: #FFFF00; /* Yellow marker for areas in between moderately polluted and clean */
+        }
+
+        .clean {
+            background-color: #00FF00; /* Green marker for clean areas */
+        }
+        #calculator-form {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        #calculator-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        #calculator-form input[type="number"],
+        #calculator-form select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        #calculator-form button {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #calculator-form button:hover {
+            background-color: #45a049;
+        }
+
+        /* Styles for result */
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <main>
+        <section>
+           <center> <h2>Carbon - Emission Rate Of Cities In India</h2></center>
+            <div id="map" style="height: 1000px;"></div>
+        </section>
+        <section>
+            <h2>Carbon Footprint Calculator</h2>
+            <form id="calculator-form">
+                 Form elements as before 
+                 <label for="distance">Distance (km):</label>
+                <input type="number" id="distance" required><br>
+
+                <label for="fuel-efficiency">Fuel Efficiency (km/l):</label>
+                <input type="number" id="fuel-efficiency" required><br>
+
+                <label for="fuel-type">Fuel Type:</label>
+                <select id="fuel-type" required>
+                    <option value="gasoline">Gasoline</option>
+                    <option value="diesel">Diesel</option>
+                </select><br>
+
+                <button type="submit">Calculate</button>
+            </form>
+            <p id="result"></p>
+        </section> 
+    </main>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Generate data for cities in India and their emission rates
+        const citiesData = [
+        { name: "Mumbai", emissionRate: 155, latitude: 19.0760, longitude: 72.8777 },
+        { name: "Delhi", emissionRate: 399, latitude: 28.6139, longitude: 77.2090 }, // Most polluted city with an emission rate of 350 g/km²
+        { name: "Bangalore", emissionRate: 163, latitude: 12.9716, longitude: 77.5946 },
+        { name: "Chennai", emissionRate: 151, latitude: 13.0827, longitude: 80.2707 },
+        { name: "Kolkata", emissionRate: 259, latitude: 22.5726, longitude: 88.3639 },
+        { name: "Ahmedabad", emissionRate: 260, latitude: 23.0225, longitude: 72.5714 },
+        { name: "Mangalore", emissionRate: 145, latitude: 12.9141, longitude: 74.8560 },
+        { name: "Surat", emissionRate: 258, latitude: 21.1702, longitude: 72.8311 },
+        { name: "Jharkhand", emissionRate: 355, latitude: 23.6102, longitude: 85.2799 },
+        { name: "Pune", emissionRate: 260, latitude: 18.5204, longitude: 73.8567 },
+        { name: "Agra", emissionRate: 370, latitude: 27.1767, longitude: 78.0081 },
+        { name: "Nagpur", emissionRate: 151, latitude: 21.1458, longitude: 79.0882 },
+        { name: "Hyderabad", emissionRate: 163, latitude: 17.3850, longitude: 78.4867 },
+        { name: "Cochin", emissionRate: 130, latitude: 9.9312, longitude: 76.2673 },
+        { name: "Pondicherry", emissionRate: 180, latitude: 11.9139, longitude: 79.8145 },
+        { name: "Varanasi", emissionRate: 267, latitude: 25.3176, longitude: 82.9739 },
+        { name: "Lucknow", emissionRate: 366, latitude: 26.8467, longitude: 80.9462 },
+        { name: "Indore", emissionRate: 266, latitude: 22.7196, longitude: 75.8577 },
+        { name: "Kanpur", emissionRate: 361, latitude: 26.4499, longitude: 80.3319 },
+        { name: "Jaipur", emissionRate: 270, latitude: 26.9124, longitude: 75.7873 },
+        { name: "Dehradun", emissionRate: 120, latitude: 30.3165, longitude: 78.0322 },
+        { name: "Mathura", emissionRate: 261, latitude: 27.4924, longitude: 77.6737 }
+        ];
+
+        // Function to generate a random emission rate
+        function getRandomEmissionRate() {
+            return Math.floor(Math.random() * 300) + 50; // Random emission rate between 50 and 350 g/km²
+        }
+
+        // Function to classify cities into pollution categories
+        function classifyCities(cityData) {
+            if (cityData.emissionRate >= 350) {
+                return "most-polluted";
+            } else if (cityData.emissionRate >= 250) {
+                return "moderately-polluted";
+            } else if(cityData.emissionRate >=150){
+                return "least-polluted";
+            }
+            else {
+                return "clean";
+            }
+        }
+
+        // Sample map initialization using Leaflet
+        const map = L.map('map').setView([20.5937, 78.9629], 5); // Center the map on India
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        // Add markers to the map based on city data
+        for (const city of citiesData) {
+            const pollutionCategory = classifyCities(city);
+            const markerIcon = L.divIcon({
+                className: pollutionCategory,
+                html: `<span>${city.name}</span>`
+            });
+
+            L.marker([city.latitude, city.longitude], { icon: markerIcon }).addTo(map);
+        }
+
+        // Carbon Footprint Calculator code
+        const calculatorForm = document.getElementById("calculator-form");
+        const resultElement = document.getElementById("result");
+
+        calculatorForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const distance = parseFloat(document.getElementById("distance").value);
+            const fuelEfficiency = parseFloat(document.getElementById("fuel-efficiency").value);
+            const fuelType = document.getElementById("fuel-type").value;
+
+            try {
+                const emissionFactor = getEmissionFactor(fuelType);
+                const carbonFootprint = (distance / fuelEfficiency) * emissionFactor;
+                resultElement.textContent = `Your carbon footprint is approximately ${carbonFootprint.toFixed(2)} kg CO2.`;
+            } catch (error) {
+                resultElement.textContent = "Error: Please select a valid fuel type.";
+            }
+        });
+
+        // Function to get emission factor based on fuel type
+        function getEmissionFactor(fuelType) {
+            // Emission factors (in kg CO2 per liter) for gasoline and diesel fuel typesa
+            const emissionFactors = {
+                gasoline: 2.31,
+                diesel: 2.68,
+                // Add more fuel types and their corresponding emission factors as needed
+            };
+
+            // Check if the provided fuel type exists in the emissionFactors object
+            if (fuelType in emissionFactors) {
+                return emissionFactors[fuelType]; // Return the emission factor for the given fuel type
+            } else {
+                throw new Error("Invalid fuel type."); // Throw an error for invalid fuel types
+            }
+        }
+    </script>
+    
+</body>
+</html>
